@@ -13,6 +13,7 @@ import org.eclipse.gef.KeyStroke;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.MouseWheelHandler;
 import org.eclipse.gef.MouseWheelZoomHandler;
+import org.eclipse.gef.palette.CombinedTemplateCreationEntry;
 import org.eclipse.gef.palette.CreationToolEntry;
 import org.eclipse.gef.palette.MarqueeToolEntry;
 import org.eclipse.gef.palette.PaletteDrawer;
@@ -25,12 +26,15 @@ import org.eclipse.gef.ui.parts.GraphicalEditor;
 import org.eclipse.gef.ui.parts.GraphicalEditorWithPalette;
 import org.eclipse.gef.ui.parts.TreeViewer;
 
+import tutogef.action.CopyNodeAction;
+import tutogef.action.PasteNodeAction;
 import tutogef.model.Employe;
 import tutogef.model.Entreprise;
 import tutogef.model.Service;
 import tutogef.part.AppEditPartFactory;
 import tutogef.part.AppTreeEditPartFactory;
 
+import org.eclipse.gef.dnd.TemplateTransferDragSourceListener;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.ui.actions.ActionRegistry;
@@ -48,6 +52,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.IPageSite;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
 import java.util.ArrayList;
@@ -77,11 +82,46 @@ public class MyGraphicalEditor extends GraphicalEditorWithPalette {
 
 		PaletteSeparator sep2 = new PaletteSeparator();
 		root.add(sep2);
+		/*
+		 * PaletteGroup instGroup = new PaletteGroup("Creation d'elemnts");
+		 * root.add(instGroup); instGroup.add(new CreationToolEntry("Service",
+		 * "Creation d'un service type", new NodeCreationFactory(
+		 * Service.class), null, null));
+		 */
+
 		PaletteGroup instGroup = new PaletteGroup("Creation d'elemnts");
 		root.add(instGroup);
-		instGroup.add(new CreationToolEntry("Service",
-				"Creation d'un service type", new NodeCreationFactory(
-						Service.class), null, null));
+		/*
+		 * instGroup.add(new CreationToolEntry("Service",
+		 * "Creation d'un service type", new NodeCreationFactory(
+		 * Service.class), AbstractUIPlugin
+		 * .imageDescriptorFromPlugin(Activator.PLUGIN_ID,
+		 * "icons/services-low.png"), AbstractUIPlugin
+		 * .imageDescriptorFromPlugin(Activator.PLUGIN_ID,
+		 * "icons/services-high.png"))); instGroup.add(new
+		 * CreationToolEntry("Employe", "Creation d'un employe model", new
+		 * NodeCreationFactory( Employe.class), AbstractUIPlugin
+		 * .imageDescriptorFromPlugin(Activator.PLUGIN_ID,
+		 * "icons/employe-low.png"), AbstractUIPlugin
+		 * .imageDescriptorFromPlugin(Activator.PLUGIN_ID,
+		 * "icons/employe-high.png")));
+		 */
+
+		instGroup.add(new CombinedTemplateCreationEntry("Service",
+				"Creation d'un service type", Service.class,
+				new NodeCreationFactory(Service.class), AbstractUIPlugin
+						.imageDescriptorFromPlugin(Activator.PLUGIN_ID,
+								"icons/services-low.png"), AbstractUIPlugin
+						.imageDescriptorFromPlugin(Activator.PLUGIN_ID,
+								"icons/services-high.png")));
+		instGroup.add(new CombinedTemplateCreationEntry("Employe",
+				"Creation d'un employe model", Employe.class,
+				new NodeCreationFactory(Employe.class), AbstractUIPlugin
+						.imageDescriptorFromPlugin(Activator.PLUGIN_ID,
+								"icons/employe-low.png"), AbstractUIPlugin
+						.imageDescriptorFromPlugin(Activator.PLUGIN_ID,
+								"icons/employe-high.png")));
+
 		// Definition l'entree dans la palette qui sera utilise par defaut :
 		// 1.lors de la premiere ouverture de la palette
 		// 2.lorsqu'un element de la palette rend la main
@@ -145,7 +185,10 @@ public class MyGraphicalEditor extends GraphicalEditorWithPalette {
 		// TODO Auto-generated method stub
 		viewer = getGraphicalViewer();
 		model = CreateEntreprise();
-		viewer.setContents(CreateEntreprise());
+		// viewer.setContents(CreateEntreprise());
+		viewer.setContents(model);
+		viewer.addDropTargetListener(new MyTemplateTransferDropTargetListener(
+				viewer));
 	}
 
 	protected void configureGraphicalViewer() {
@@ -212,11 +255,20 @@ public class MyGraphicalEditor extends GraphicalEditorWithPalette {
 
 		public void createControl(Composite parent) {
 			sash = new SashForm(parent, SWT.VERTICAL);
+			
+			IActionBars bars = getSite().getActionBars();
+			ActionRegistry ar = getActionRegistry();
+			
 			getViewer().createControl(sash);
 			getViewer().setEditDomain(getEditDomain());
 			getViewer().setEditPartFactory(new AppTreeEditPartFactory());
 			getViewer().setContents(model);
 			getSelectionSynchronizer().addViewer(getViewer());
+			
+			bars.setGlobalActionHandler(ActionFactory.COPY.getId(),
+					ar.getAction(ActionFactory.COPY.getId()));
+					bars.setGlobalActionHandler(ActionFactory.PASTE.getId(),
+					ar.getAction(ActionFactory.PASTE.getId()));
 
 			Canvas canvas = new Canvas(sash, SWT.BORDER);
 			LightweightSystem lws = new LightweightSystem(canvas);
@@ -244,6 +296,8 @@ public class MyGraphicalEditor extends GraphicalEditorWithPalette {
 			viewer.setContextMenu(provider);
 
 		}
+		
+		
 
 		public void init(IPageSite pageSite) {
 			super.init(pageSite);
@@ -278,12 +332,26 @@ public class MyGraphicalEditor extends GraphicalEditorWithPalette {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void createActions() {
 		super.createActions();
 		ActionRegistry registry = getActionRegistry();
 		IAction action = new RenameAction(this);
 		registry.registerAction(action);
 		getSelectionActions().add(action.getId());
+		action = new CopyNodeAction(this);
+		registry.registerAction(action);
+		getSelectionActions().add(action.getId());
+		action = new PasteNodeAction(this);
+		registry.registerAction(action);
+		getSelectionActions().add(action.getId());
+	}
+
+	@Override
+	protected void initializePaletteViewer() {
+		super.initializePaletteViewer();
+		getPaletteViewer().addDragSourceListener(
+				new TemplateTransferDragSourceListener(getPaletteViewer()));
 	}
 
 }
