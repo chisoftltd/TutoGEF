@@ -5,6 +5,7 @@ import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.Viewport;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.draw2d.parts.ScrollableThumbnail;
+import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.DefaultEditDomain;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.KeyHandler;
@@ -12,8 +13,16 @@ import org.eclipse.gef.KeyStroke;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.MouseWheelHandler;
 import org.eclipse.gef.MouseWheelZoomHandler;
+import org.eclipse.gef.palette.CreationToolEntry;
+import org.eclipse.gef.palette.MarqueeToolEntry;
+import org.eclipse.gef.palette.PaletteDrawer;
+import org.eclipse.gef.palette.PaletteGroup;
+import org.eclipse.gef.palette.PaletteRoot;
+import org.eclipse.gef.palette.PaletteSeparator;
+import org.eclipse.gef.palette.SelectionToolEntry;
 import org.eclipse.gef.ui.parts.ContentOutlinePage;
 import org.eclipse.gef.ui.parts.GraphicalEditor;
+import org.eclipse.gef.ui.parts.GraphicalEditorWithPalette;
 import org.eclipse.gef.ui.parts.TreeViewer;
 
 import tutogef.model.Employe;
@@ -24,9 +33,11 @@ import tutogef.part.AppTreeEditPartFactory;
 
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
+import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.gef.ui.actions.ZoomInAction;
 import org.eclipse.gef.ui.actions.ZoomOutAction;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.DisposeEvent;
@@ -41,14 +52,41 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
 import java.util.ArrayList;
 
-public class MyGraphicalEditor extends GraphicalEditor {
+public class MyGraphicalEditor extends GraphicalEditorWithPalette {
 
 	public static final String ID = "tutogef.mygraphicaleditor";
 	private Entreprise model;
 	private KeyHandler keyHandler;
+	GraphicalViewer viewer;
 
 	public MyGraphicalEditor() {
 		setEditDomain(new DefaultEditDomain(this));
+	}
+
+	@Override
+	protected PaletteRoot getPaletteRoot() {
+		// Racine de la palette
+		PaletteRoot root = new PaletteRoot();
+		// Creation d'un groupe (pour organiser un peu la palette)
+		PaletteGroup manipGroup = new PaletteGroup("Manipulation d'objets");
+		root.add(manipGroup);
+		// Ajout de l'outil de selection et de l'outil de selection groupe
+		SelectionToolEntry selectionToolEntry = new SelectionToolEntry();
+		manipGroup.add(selectionToolEntry);
+		manipGroup.add(new MarqueeToolEntry());
+
+		PaletteSeparator sep2 = new PaletteSeparator();
+		root.add(sep2);
+		PaletteGroup instGroup = new PaletteGroup("Creation d'elemnts");
+		root.add(instGroup);
+		instGroup.add(new CreationToolEntry("Service",
+				"Creation d'un service type", new NodeCreationFactory(
+						Service.class), null, null));
+		// Definition l'entree dans la palette qui sera utilise par defaut :
+		// 1.lors de la premiere ouverture de la palette
+		// 2.lorsqu'un element de la palette rend la main
+		root.setDefaultEntry(selectionToolEntry);
+		return root;
 	}
 
 	public Entreprise CreateEntreprise() {
@@ -105,7 +143,7 @@ public class MyGraphicalEditor extends GraphicalEditor {
 	@Override
 	protected void initializeGraphicalViewer() {
 		// TODO Auto-generated method stub
-		GraphicalViewer viewer = getGraphicalViewer();
+		viewer = getGraphicalViewer();
 		model = CreateEntreprise();
 		viewer.setContents(CreateEntreprise());
 	}
@@ -201,6 +239,10 @@ public class MyGraphicalEditor extends GraphicalEditor {
 			getGraphicalViewer().getControl().addDisposeListener(
 					disposeListener);
 
+			ContextMenuProvider provider = new AppContextMenuProvider(viewer,
+					getActionRegistry());
+			viewer.setContextMenu(provider);
+
 		}
 
 		public void init(IPageSite pageSite) {
@@ -216,6 +258,10 @@ public class MyGraphicalEditor extends GraphicalEditor {
 			bars.updateActionBars();
 			// On associe les raccourcis clavier de l'editeur a l'outline
 			getViewer().setKeyHandler(keyHandler);
+			ContextMenuProvider provider = new AppContextMenuProvider(
+					getViewer(), getActionRegistry());
+			getViewer().setContextMenu(provider);
+
 		}
 
 		public Control getControl() {
@@ -230,6 +276,14 @@ public class MyGraphicalEditor extends GraphicalEditor {
 						disposeListener);
 			super.dispose();
 		}
+	}
+
+	public void createActions() {
+		super.createActions();
+		ActionRegistry registry = getActionRegistry();
+		IAction action = new RenameAction(this);
+		registry.registerAction(action);
+		getSelectionActions().add(action.getId());
 	}
 
 }

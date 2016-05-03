@@ -12,6 +12,8 @@ import org.eclipse.swt.graphics.Color;
 public class ServiceFigure extends Figure {
 	private Label labelName = new Label();
 	private Label labelEtage = new Label();
+	public static final int SERVICE_FIGURE_DEFWIDTH = 250;
+	public static final int SERVICE_FIGURE_DEFHEIGHT = 150;
 
 	public ServiceFigure() {
 		XYLayout layout = new XYLayout();
@@ -31,8 +33,11 @@ public class ServiceFigure extends Figure {
 				(new Double(Math.random() * 128)).intValue() + 128,
 				(new Double(Math.random() * 128)).intValue() + 128,
 				(new Double(Math.random() * 128)).intValue() + 128));
+
+		// setForegroundColor(ColorConstants.black);
 		setBorder(new LineBorder(1));
 		setOpaque(true);
+
 	}
 
 	public void setName(String text) {

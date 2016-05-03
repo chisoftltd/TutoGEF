@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 
+import tutogef.AppRenamePolicy;
 import tutogef.figure.EmployeFigure;
 import tutogef.model.Employe;
 import tutogef.model.Node;
@@ -21,6 +23,7 @@ public class EmployePart extends AppAbstractEditPart {
 	@Override
 	protected void createEditPolicies() {
 		// TODO Auto-generated method stub
+		installEditPolicy(EditPolicy.NODE_ROLE, new AppRenamePolicy());
 	}
 
 	protected void refreshVisuals() {
@@ -39,5 +42,7 @@ public class EmployePart extends AppAbstractEditPart {
 	public void propertyChange(PropertyChangeEvent evt) {
 		if (evt.getPropertyName().equals(Node.PROPERTY_LAYOUT))
 			refreshVisuals();
+		if (evt.getPropertyName().equals(Node.PROPERTY_RENAME)) refreshVisuals();
+		if (evt.getPropertyName().equals(Employe.PROPERTY_FIRSTNAME)) refreshVisuals();
 	}
 }

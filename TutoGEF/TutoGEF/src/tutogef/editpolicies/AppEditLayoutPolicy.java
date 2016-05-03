@@ -5,10 +5,14 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.XYLayoutEditPolicy;
 import org.eclipse.gef.requests.CreateRequest;
+
 import tutogef.commands.AbstractLayoutCommand;
 import tutogef.commands.EmployeChangeLayoutCommand;
 import tutogef.commands.ServiceChangeLayoutCommand;
+import tutogef.commands.ServiceCreateCommand;
+import tutogef.figure.ServiceFigure;
 import tutogef.part.EmployePart;
+import tutogef.part.EntreprisePart;
 import tutogef.part.ServicePart;
 
 public class AppEditLayoutPolicy extends XYLayoutEditPolicy {
@@ -29,6 +33,21 @@ public class AppEditLayoutPolicy extends XYLayoutEditPolicy {
 	@Override
 	protected Command getCreateCommand(CreateRequest request) {
 		// TODO Auto-generated method stub
+		if (request.getType() == REQ_CREATE
+				&& getHost() instanceof EntreprisePart) {
+			ServiceCreateCommand cmd = new ServiceCreateCommand();
+			cmd.setEntreprise(getHost().getModel());
+			cmd.setService(request.getNewObject());
+			Rectangle constraint = (Rectangle) getConstraintFor(request);
+			constraint.x = (constraint.x < 0) ? 0 : constraint.x;
+			constraint.y = (constraint.y < 0) ? 0 : constraint.y;
+			constraint.width = (constraint.width <= 0) ? ServiceFigure.SERVICE_FIGURE_DEFWIDTH
+					: constraint.width;
+			constraint.height = (constraint.height <= 0) ? ServiceFigure.SERVICE_FIGURE_DEFHEIGHT
+					: constraint.height;
+			cmd.setLayout(constraint);
+			return cmd;
+		}
 		return null;
 	}
 

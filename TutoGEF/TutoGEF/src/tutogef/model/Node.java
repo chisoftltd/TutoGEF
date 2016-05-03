@@ -2,10 +2,14 @@ package tutogef.model;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.ui.views.properties.IPropertySource;
+
 import java.beans.*;
 
-public class Node {
+public class Node implements IAdaptable {
 	private String name;
 	private Rectangle layout;
 	private List<Node> children;
@@ -15,6 +19,8 @@ public class Node {
 	public static final String PROPERTY_LAYOUT = "NodeLayout";
 	public static final String PROPERTY_ADD = "NodeAddChild";
 	public static final String PROPERTY_REMOVE = "NodeRemoveChild";
+	public static final String PROPERTY_RENAME = "NodeRename";
+	private IPropertySource propertySource = null;
 
 	public Node() {
 		this.name = "Unknown";
@@ -37,7 +43,9 @@ public class Node {
 	}
 
 	public void setName(String name) {
+		String oldName = this.name;
 		this.name = name;
+		getListeners().firePropertyChange(PROPERTY_RENAME, oldName, this.name);
 	}
 
 	public String getName() {
@@ -81,5 +89,19 @@ public class Node {
 
 	public Node getParent() {
 		return this.parent;
+	}
+
+	@Override
+	public Object getAdapter(Class adapter) {
+		if (adapter == IPropertySource.class) {
+			if (propertySource == null)
+				propertySource = new NodePropertySource(this);
+			return propertySource;
+		}
+		return null;
+	}
+
+	public boolean contains(Node child) {
+		return children.contains(child);
 	}
 }

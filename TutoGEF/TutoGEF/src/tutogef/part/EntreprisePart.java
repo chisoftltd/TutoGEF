@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
 
+import tutogef.AppRenamePolicy;
 import tutogef.editpolicies.AppDeletePolicy;
 import tutogef.editpolicies.AppEditLayoutPolicy;
 import tutogef.figure.EntrepriseFigure;
@@ -24,6 +25,7 @@ public class EntreprisePart extends AppAbstractEditPart {
 		// TODO Auto-generated method stub
 		installEditPolicy(EditPolicy.LAYOUT_ROLE, new AppEditLayoutPolicy());
 		installEditPolicy(EditPolicy.COMPONENT_ROLE, new AppDeletePolicy());
+		installEditPolicy(EditPolicy.NODE_ROLE, new AppRenamePolicy());
 	}
 
 	protected void refreshVisuals() {
@@ -45,6 +47,10 @@ public class EntreprisePart extends AppAbstractEditPart {
 		if (evt.getPropertyName().equals(Node.PROPERTY_REMOVE))
 			refreshChildren();
 		if (evt.getPropertyName().equals(Node.PROPERTY_LAYOUT))
+			refreshVisuals();
+		if (evt.getPropertyName().equals(Node.PROPERTY_RENAME))
+			refreshVisuals();
+		if (evt.getPropertyName().equals(Entreprise.PROPERTY_CAPITAL))
 			refreshVisuals();
 	}
 

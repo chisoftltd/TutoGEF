@@ -3,7 +3,8 @@ package tutogef.model;
 public class Entreprise extends Node {
 	private String address;
 	private int capital;
-
+	public static final String PROPERTY_CAPITAL = "EntrepriseCapital";
+	
 	public void setAddress(String address) {
 		this.address = address;
 	}
@@ -19,4 +20,5 @@ public class Entreprise extends Node {
 	public int getCapital() {
 		return this.capital;
 	}
+
 }
