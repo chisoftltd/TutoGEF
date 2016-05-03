@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         id="application"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run
+               class="tutogef.Application">
+         </run>
+      </application>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            name="RCP Perspective"
+            class="tutogef.Perspective"
+            id="TutoGEF.perspective">
+      </perspective>
+   </extension>
+  <extension point="org.eclipse.ui.editors"> 
+      <editor 
+         id="tutogef.mygraphicaleditor" 
+         name="MyGraphicalEditor" 
+         icon="./icons/KTH.png"
+         class="tutogef.MyGraphicalEditor" 
+         contributorClass="tutogef.MyGraphicalEditorActionBarContributor"
+         default="true"> 
+      </editor> 
+   </extension>
+  <extension
+        point="org.eclipse.ui.views">
+  </extension> 
+</plugin>

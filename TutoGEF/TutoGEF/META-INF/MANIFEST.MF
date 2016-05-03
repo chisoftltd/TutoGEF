@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: TutoGEF
+Bundle-SymbolicName: TutoGEF;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: tutogef.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.gef;bundle-version="3.9.100",
+ org.eclipse.ui.workbench,
+ org.eclipse.equinox.registry,
+ org.eclipse.draw2d,
+ org.eclipse.swt,
+ org.eclipse.jface
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Import-Package: org.eclipse.ui.views.contentoutline
