@@ -1,5 +1,7 @@
 package tutogef;
 
+import java.util.ArrayList;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.Viewport;
@@ -13,34 +15,22 @@ import org.eclipse.gef.KeyStroke;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.MouseWheelHandler;
 import org.eclipse.gef.MouseWheelZoomHandler;
+import org.eclipse.gef.dnd.TemplateTransferDragSourceListener;
+import org.eclipse.gef.editparts.ScalableRootEditPart;
+import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.palette.CombinedTemplateCreationEntry;
-import org.eclipse.gef.palette.CreationToolEntry;
 import org.eclipse.gef.palette.MarqueeToolEntry;
-import org.eclipse.gef.palette.PaletteDrawer;
 import org.eclipse.gef.palette.PaletteGroup;
 import org.eclipse.gef.palette.PaletteRoot;
 import org.eclipse.gef.palette.PaletteSeparator;
 import org.eclipse.gef.palette.SelectionToolEntry;
-import org.eclipse.gef.ui.parts.ContentOutlinePage;
-import org.eclipse.gef.ui.parts.GraphicalEditor;
-import org.eclipse.gef.ui.parts.GraphicalEditorWithPalette;
-import org.eclipse.gef.ui.parts.TreeViewer;
-
-import tutogef.action.CopyNodeAction;
-import tutogef.action.PasteNodeAction;
-import tutogef.model.Employe;
-import tutogef.model.Entreprise;
-import tutogef.model.Service;
-import tutogef.part.AppEditPartFactory;
-import tutogef.part.AppTreeEditPartFactory;
-
-import org.eclipse.gef.dnd.TemplateTransferDragSourceListener;
-import org.eclipse.gef.editparts.ZoomManager;
-import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.gef.ui.actions.ZoomInAction;
 import org.eclipse.gef.ui.actions.ZoomOutAction;
+import org.eclipse.gef.ui.parts.ContentOutlinePage;
+import org.eclipse.gef.ui.parts.GraphicalEditorWithPalette;
+import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -55,7 +45,13 @@ import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
-import java.util.ArrayList;
+import tutogef.action.CopyNodeAction;
+import tutogef.action.PasteNodeAction;
+import tutogef.model.Employe;
+import tutogef.model.Entreprise;
+import tutogef.model.Service;
+import tutogef.part.AppEditPartFactory;
+import tutogef.part.AppTreeEditPartFactory;
 
 public class MyGraphicalEditor extends GraphicalEditorWithPalette {
 
@@ -234,7 +230,7 @@ public class MyGraphicalEditor extends GraphicalEditorWithPalette {
 
 	}
 
-	public Object getAdapter(Class type) {
+	public Object getAdapter(@SuppressWarnings("rawtypes") Class type) {
 		if (type == ZoomManager.class)
 			return ((ScalableRootEditPart) getGraphicalViewer()
 					.getRootEditPart()).getZoomManager();

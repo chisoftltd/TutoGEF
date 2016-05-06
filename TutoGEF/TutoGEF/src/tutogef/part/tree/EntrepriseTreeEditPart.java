@@ -1,10 +1,10 @@
 package tutogef.part.tree;
 
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
-import tutogef.model.*;
 import java.util.List;
+
+import tutogef.model.Entreprise;
+import tutogef.model.Node;
 
 public class EntrepriseTreeEditPart extends AppAbstractTreeEditPart {
 	protected List<Node> getModelChildren() {

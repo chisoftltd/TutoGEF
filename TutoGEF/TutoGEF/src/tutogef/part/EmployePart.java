@@ -1,3 +1,4 @@
+
 package tutogef.part;
 
 import java.beans.PropertyChangeEvent;
@@ -6,9 +7,9 @@ import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.EditPolicy;
-import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 
 import tutogef.AppRenamePolicy;
+import tutogef.editpolicies.AppDeletePolicy;
 import tutogef.figure.EmployeFigure;
 import tutogef.model.Employe;
 import tutogef.model.Node;
@@ -24,6 +25,7 @@ public class EmployePart extends AppAbstractEditPart {
 	protected void createEditPolicies() {
 		// TODO Auto-generated method stub
 		installEditPolicy(EditPolicy.NODE_ROLE, new AppRenamePolicy());
+		installEditPolicy(EditPolicy.COMPONENT_ROLE, new AppDeletePolicy());
 	}
 
 	protected void refreshVisuals() {

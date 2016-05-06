@@ -27,7 +27,7 @@ public class ServiceTreeEditPart extends AppAbstractTreeEditPart {
 		Service model = (Service) getModel();
 		setWidgetText(model.getName());
 		setWidgetImage(PlatformUI.getWorkbench().getSharedImages()
-				.getImage(ISharedImages.IMG_OBJ_ELEMENT));
+				.getImage(ISharedImages.IMG_OBJ_FOLDER));
 	}
 
 	@Override

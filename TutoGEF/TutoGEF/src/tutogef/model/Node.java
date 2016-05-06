@@ -91,6 +91,7 @@ public class Node implements IAdaptable {
 		return this.parent;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Object getAdapter(Class adapter) {
 		if (adapter == IPropertySource.class) {
